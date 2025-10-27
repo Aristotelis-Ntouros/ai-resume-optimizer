@@ -42,13 +42,14 @@ export default async function handler(req, res) {
 
       // Build formatting instructions based on user preference
       const formattingInstructions = preserveFormatting
-        ? `\n\n**CRITICAL: PRESERVE ORIGINAL FORMATTING**\nThe user wants to keep their existing template and layout. You MUST:
-- Keep the EXACT same structure, sections, and layout as the original
-- Preserve all formatting, headers, bullet points, spacing exactly as shown
-- Only improve the CONTENT: strengthen action verbs, add keywords, quantify achievements
-- Do NOT change the order of sections or reorganize the resume
-- Do NOT add or remove sections
-- Think of this as a "content enhancement only" - the template stays 100% the same`
+        ? `\n\n**CRITICAL: PRESERVE ORIGINAL FORMATTING & CONTENT**\nThe user wants to keep their existing template. You MUST:
+- Include EVERY SINGLE section from the original (Name, Contact, Summary, Skills, Languages, Interests, Work Experience, Education, etc.)
+- Keep ALL content - do NOT delete or remove anything
+- Preserve the EXACT structure and order of sections
+- Only ENHANCE the content: strengthen action verbs, quantify achievements where possible, add relevant keywords
+- If a section has content in the original, it MUST have content in the rewritten version
+- Keep the same formatting style (bullet points, headers, spacing)
+- Return the COMPLETE resume with all information preserved and enhanced`
         : `6. Use SIMPLE FORMATTING - No tables, no columns, no special characters
 7. Include standard sections: Contact, Summary, Experience, Education, Skills
 8. Keep it ATS-FRIENDLY - single column, standard bullet points (•), clear headers

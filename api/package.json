@@ -6,9 +6,11 @@
     "docx": "^9.5.1",
     "docxtemplater": "^3.67.1",
     "jszip": "^3.10.1",
+    "muhammara": "^6.0.0",
     "multiparty": "^4.2.3",
     "openai": "^4.73.0",
     "pdf-lib": "^1.17.1",
+    "pdf-parse": "^2.4.5",
     "pizzip": "^3.2.0"
   }
 }
