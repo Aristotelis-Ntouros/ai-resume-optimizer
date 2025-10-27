@@ -105,7 +105,7 @@ export class ResumeService {
 
   constructor(private authService: AuthService) {}
 
-  async rewriteCV(cvText: string): Promise<string> {
+  async rewriteCV(cvText: string, preserveFormatting: boolean = false): Promise<string> {
     this.isLoading.set(true);
     try {
       // Pass ATS issues to the rewrite API
@@ -117,7 +117,8 @@ export class ResumeService {
         body: JSON.stringify({
           text: cvText,
           type: 'cv',
-          atsIssues: atsIssues
+          atsIssues: atsIssues,
+          preserveFormatting: preserveFormatting
         })
       });
 

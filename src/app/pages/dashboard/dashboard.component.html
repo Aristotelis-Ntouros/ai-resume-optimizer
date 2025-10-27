@@ -170,6 +170,20 @@
                 </div>
               }
 
+              <!-- Formatting Preference -->
+              <div class="formatting-option">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="preserveFormatting"
+                    class="checkbox-input">
+                  <span class="checkbox-text">
+                    <strong>Keep my original formatting</strong>
+                    <span class="checkbox-hint">Improve content only, preserve your existing template and layout</span>
+                  </span>
+                </label>
+              </div>
+
               <div class="action-buttons">
                 <button
                   (click)="rewriteCV()"

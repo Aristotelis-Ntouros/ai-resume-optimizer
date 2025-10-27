@@ -30,6 +30,7 @@ export class DashboardComponent implements OnInit {
   showJobMatcher = signal(false);
   isAnalyzingMatch = signal(false);
   isTailoringResume = signal(false);
+  preserveFormatting = signal(false);
 
   templates = [
     {
@@ -157,7 +158,10 @@ export class DashboardComponent implements OnInit {
       // Store original ATS score
       this.originalAtsScore.set(this.resumeService.atsScore()?.score || null);
 
-      const rewritten = await this.resumeService.rewriteCV(this.originalText());
+      const rewritten = await this.resumeService.rewriteCV(
+        this.originalText(),
+        this.preserveFormatting()
+      );
       this.rewrittenText.set(rewritten);
 
       // Analyze the rewritten version's ATS score
