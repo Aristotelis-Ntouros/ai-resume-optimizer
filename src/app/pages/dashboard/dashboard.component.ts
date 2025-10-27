@@ -178,8 +178,55 @@ export class DashboardComponent implements OnInit {
   async downloadPDF() {
     if (!this.rewrittenText()) return;
 
-    // Show template selector
+    // If user preserved formatting and has original file, rebuild it with optimized text
+    if (this.preserveFormatting() && this.uploadedFile()) {
+      await this.downloadWithPreservedFormat();
+      return;
+    }
+
+    // Otherwise, show template selector
     this.showTemplateSelector.set(true);
+  }
+
+  async downloadWithPreservedFormat() {
+    this.isGeneratingTemplate.set(true);
+    this.errorMessage.set('');
+
+    try {
+      const originalFile = this.uploadedFile();
+      if (!originalFile) return;
+
+      // Create FormData to send the file
+      const formData = new FormData();
+      formData.append('file', originalFile);
+      formData.append('originalText', this.originalText());
+      formData.append('optimizedText', this.rewrittenText());
+
+      const response = await fetch('/api/rebuild-with-format', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to rebuild document');
+      }
+
+      // Download the rebuilt file
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `optimized_${originalFile.name}`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      this.errorMessage.set('✅ Your optimized resume has been downloaded with your original formatting preserved!');
+    } catch (error: any) {
+      console.error('Error rebuilding document:', error);
+      this.errorMessage.set(error.message || 'Failed to rebuild document with preserved formatting');
+    } finally {
+      this.isGeneratingTemplate.set(false);
+    }
   }
 
   async downloadWithTemplate(templateId: string) {
