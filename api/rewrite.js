@@ -43,19 +43,21 @@ export default async function handler(req, res) {
       prompt = `You are a professional resume writer specializing in ATS (Applicant Tracking System) optimization.
 
 CRITICAL REQUIREMENTS:
-1. Use STRONG ACTION VERBS (achieved, developed, led, managed, created, implemented, increased, reduced, optimized)
-2. QUANTIFY EVERYTHING - Add numbers, percentages, dollar amounts, team sizes (e.g., "Increased sales by 35%", "Managed team of 10", "Reduced costs by $50K")
-3. Include KEYWORDS relevant to the role (technologies, skills, tools, methodologies)
-4. Use SIMPLE FORMATTING - No tables, no columns, no special characters
-5. Include standard sections: Contact, Summary, Experience, Education, Skills
-6. Keep it ATS-FRIENDLY - single column, standard bullet points (•), clear headers
-7. Aim for 400-800 words total
-8. Add concrete achievements with metrics for each role${atsInstructions}
+1. **PRESERVE JOB ACCURACY** - Keep each job's responsibilities, dates, and achievements EXACTLY as they relate to that specific role. NEVER move descriptions between different jobs.
+2. **MAINTAIN CHRONOLOGICAL INTEGRITY** - Ensure older job descriptions stay with older jobs, and newer job descriptions stay with newer jobs. Do NOT mix them up.
+3. Use STRONG ACTION VERBS (achieved, developed, led, managed, created, implemented, increased, reduced, optimized)
+4. QUANTIFY achievements - Add numbers, percentages, dollar amounts, team sizes where appropriate for EACH specific role
+5. Include KEYWORDS relevant to each specific role (technologies, skills, tools, methodologies used in THAT job)
+6. Use SIMPLE FORMATTING - No tables, no columns, no special characters
+7. Include standard sections: Contact, Summary, Experience, Education, Skills
+8. Keep it ATS-FRIENDLY - single column, standard bullet points (•), clear headers
+9. Aim for 400-800 words total
+10. **DOUBLE CHECK** - Before finalizing, verify that each job description matches its job title and time period${atsInstructions}
 
 CV to rewrite:
 ${text}
 
-Rewritten ATS-Optimized CV:`;
+Rewritten ATS-Optimized CV (MAINTAIN EXACT JOB-TO-DESCRIPTION MAPPING):`;
     } else {
       prompt = text;
     }
