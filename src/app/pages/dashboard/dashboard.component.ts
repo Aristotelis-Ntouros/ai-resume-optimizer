@@ -182,132 +182,39 @@ export class DashboardComponent implements OnInit {
     this.errorMessage.set('');
     this.isGeneratingTemplate.set(true);
 
-    // IMPORTANT: Open window IMMEDIATELY (synchronously) to avoid popup blocker
-    // Browsers only allow window.open() when called directly from user interaction
-    const printWindow = window.open('', '_blank');
-
-    if (!printWindow) {
-      console.error('Failed to open print window - popup is blocked');
-      this.errorMessage.set('Could not open print window. Please allow popups and try again.');
-      this.isGeneratingTemplate.set(false);
-      return;
-    }
-
-    // Show loading message in the window while we generate the PDF
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          }
-          .loading {
-            text-align: center;
-            color: white;
-          }
-          .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-          }
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-          h2 { margin: 0 0 10px; font-size: 24px; }
-          p { margin: 0; opacity: 0.9; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <div class="loading">
-          <div class="spinner"></div>
-          <h2>Generating Your PDF</h2>
-          <p>Please wait while we create your professional resume...</p>
-        </div>
-      </body>
-      </html>
-    `);
-
     try {
-      console.log('Starting template generation with template:', templateId);
+      console.log('Starting PDF generation with template:', templateId);
 
       // Parse the rewritten CV to extract structured data
-      console.log('Parsing CV data...');
       const cvData = await this.resumeService.parseCV(this.rewrittenText());
-      console.log('CV data parsed:', cvData);
       this.parsedCVData.set(cvData);
 
-      // Generate template HTML
-      console.log('Generating template HTML...');
-      const html = await this.resumeService.generateTemplateHTML(cvData, templateId);
-      console.log('Template HTML generated, length:', html.length);
+      // Generate PDF on server
+      const response = await fetch('/api/generate-template-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cvData, templateName: templateId })
+      });
 
-      // Replace loading screen with actual resume
-      console.log('Displaying resume in print window');
-      printWindow.document.open();
-      printWindow.document.write(html);
-      printWindow.document.close();
-      printWindow.focus();
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
 
-      // Trigger print dialog after a short delay to ensure content is rendered
-      setTimeout(() => {
-        printWindow.print();
-        console.log('Print dialog triggered');
-      }, 500);
+      // Download the PDF
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `resume_${templateId}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
 
       this.showTemplateSelector.set(false);
-      this.isGeneratingTemplate.set(false);
+      this.errorMessage.set('');
     } catch (error: any) {
-      console.error('Template generation error:', error);
-
-      // Show error in the popup window
-      printWindow.document.open();
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body {
-              margin: 0;
-              padding: 20px;
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-              background: #fee;
-            }
-            .error {
-              max-width: 600px;
-              margin: 50px auto;
-              padding: 30px;
-              background: white;
-              border-radius: 8px;
-              border-left: 4px solid #ef4444;
-            }
-            h2 { color: #dc2626; margin: 0 0 10px; }
-            p { color: #666; margin: 0; }
-          </style>
-        </head>
-        <body>
-          <div class="error">
-            <h2>Generation Failed</h2>
-            <p>${error.message || 'Failed to generate PDF with template'}</p>
-            <p style="margin-top: 15px; font-size: 14px;">You can close this window and try again.</p>
-          </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-
+      console.error('PDF generation error:', error);
       this.errorMessage.set(error.message || 'Failed to generate PDF with template');
+    } finally {
       this.isGeneratingTemplate.set(false);
     }
   }

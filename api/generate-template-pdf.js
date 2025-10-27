@@ -1,3 +1,6 @@
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -24,14 +27,42 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'CV data and template name are required' });
     }
 
+    console.log('Generating template HTML...');
     const html = generateTemplateHTML(cvData, templateName);
 
-    // For Vercel serverless, we'll use a simpler approach initially
-    // Return HTML for client-side PDF generation
-    res.status(200).json({
-      html,
-      message: 'Template generated successfully'
+    console.log('Launching Chromium...');
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     });
+
+    const page = await browser.newPage();
+
+    console.log('Setting HTML content...');
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    console.log('Generating PDF...');
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '0',
+        right: '0',
+        bottom: '0',
+        left: '0'
+      }
+    });
+
+    await browser.close();
+
+    console.log('PDF generated successfully');
+
+    // Send PDF as downloadable file
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="resume_${templateName}.pdf"`);
+    res.send(pdfBuffer);
 
   } catch (error) {
     console.error('Error generating template PDF:', error);

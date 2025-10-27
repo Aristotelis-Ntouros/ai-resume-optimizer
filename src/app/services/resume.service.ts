@@ -187,20 +187,6 @@ export class ResumeService {
     return await response.json();
   }
 
-  async generateTemplateHTML(cvData: any, templateName: string): Promise<string> {
-    const response = await fetch('/api/generate-template-pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cvData, templateName })
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to generate template');
-    }
-
-    const data = await response.json();
-    return data.html;
-  }
 
   private sanitizeText(text: string): string {
     // Remove null bytes and other problematic Unicode characters
