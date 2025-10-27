@@ -1,0 +1,470 @@
+<div class="dashboard">
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+          <defs>
+            <linearGradient id="dashboardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="36" height="36" rx="8" fill="url(#dashboardGradient)"/>
+          <path d="M13 10 C13 9.5 13.5 9 14 9 L23 9 L27 13 L27 29 C27 29.5 26.5 30 26 30 L14 30 C13.5 30 13 29.5 13 29 Z" fill="white" opacity="0.95"/>
+          <path d="M23 9 L23 13 L27 13" fill="none" stroke="white" stroke-width="1" opacity="0.7"/>
+          <path d="M16.5 20 L18.5 22 L23.5 17" fill="none" stroke="url(#dashboardGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="25" cy="25" r="4.5" fill="#10b981"/>
+          <text x="25" y="27" font-family="Arial, sans-serif" font-size="5" font-weight="700" fill="white" text-anchor="middle">AI</text>
+        </svg>
+        <span>ResuMatch</span>
+      </div>
+      <div class="nav-links">
+        <span class="user-email">{{ authService.currentUser()?.email }}</span>
+        <button (click)="authService.signOut()" class="btn-outline">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    @if (currentView() === 'upload') {
+      <div class="upload-section">
+        <div class="upload-card">
+          <h1>Upload Your Resume</h1>
+          <p class="subtitle">Upload your CV in PDF or DOCX format to get started</p>
+
+          <div class="upload-area">
+            <input
+              type="file"
+              id="fileInput"
+              accept=".pdf,.docx,.doc,.txt"
+              (change)="onFileSelected($event)"
+              hidden>
+
+            @if (!uploadedFile()) {
+              <label for="fileInput" class="upload-label">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span class="upload-text">Click to upload or drag and drop</span>
+                <span class="upload-formats">PDF, DOCX, DOC, or TXT</span>
+              </label>
+            } @else {
+              <div class="file-info">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                  <polyline points="13 2 13 9 20 9"/>
+                </svg>
+                <div class="file-details">
+                  <p class="file-name">{{ uploadedFile()?.name }}</p>
+                  <p class="file-size">{{ (uploadedFile()?.size || 0) / 1024 | number:'1.0-0' }} KB</p>
+                </div>
+                <button (click)="startNew()" class="btn-remove">Remove</button>
+              </div>
+
+              <!-- ATS Score Card -->
+              @if (resumeService.atsScore()) {
+                <div class="ats-score-card">
+                  <div class="ats-header">
+                    <div class="ats-score-circle">
+                      <svg class="score-ring" viewBox="0 0 120 120">
+                        <circle class="score-ring-bg" cx="60" cy="60" r="54" />
+                        <circle
+                          class="score-ring-progress"
+                          cx="60"
+                          cy="60"
+                          r="54"
+                          [style.stroke-dashoffset]="339.3 - (339.3 * resumeService.atsScore()!.score / 100)" />
+                      </svg>
+                      <div class="score-value">
+                        <span class="score-number">{{ resumeService.atsScore()!.score }}</span>
+                        <span class="score-label">/ 100</span>
+                      </div>
+                    </div>
+                    <div class="ats-summary">
+                      <div class="ats-grade">Grade: {{ resumeService.atsScore()!.grade }}</div>
+                      <p class="ats-description">{{ resumeService.atsScore()!.summary }}</p>
+                    </div>
+                  </div>
+
+                  <div class="ats-breakdown">
+                    <h4>Score Breakdown</h4>
+                    <div class="breakdown-items">
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Format</span>
+                        <div class="breakdown-bar">
+                          <div class="breakdown-fill" [style.width.%]="resumeService.atsScore()!.scores.format"></div>
+                        </div>
+                        <span class="breakdown-value">{{ resumeService.atsScore()!.scores.format }}%</span>
+                      </div>
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Keywords</span>
+                        <div class="breakdown-bar">
+                          <div class="breakdown-fill" [style.width.%]="resumeService.atsScore()!.scores.keywords"></div>
+                        </div>
+                        <span class="breakdown-value">{{ resumeService.atsScore()!.scores.keywords }}%</span>
+                      </div>
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Structure</span>
+                        <div class="breakdown-bar">
+                          <div class="breakdown-fill" [style.width.%]="resumeService.atsScore()!.scores.structure"></div>
+                        </div>
+                        <span class="breakdown-value">{{ resumeService.atsScore()!.scores.structure }}%</span>
+                      </div>
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Content</span>
+                        <div class="breakdown-bar">
+                          <div class="breakdown-fill" [style.width.%]="resumeService.atsScore()!.scores.content"></div>
+                        </div>
+                        <span class="breakdown-value">{{ resumeService.atsScore()!.scores.content }}%</span>
+                      </div>
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Contact</span>
+                        <div class="breakdown-bar">
+                          <div class="breakdown-fill" [style.width.%]="resumeService.atsScore()!.scores.contact"></div>
+                        </div>
+                        <span class="breakdown-value">{{ resumeService.atsScore()!.scores.contact }}%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  @if (resumeService.atsScore()!.issues.length > 0) {
+                    <div class="ats-issues">
+                      <h4>Issues Found ({{ resumeService.atsScore()!.issues.length }})</h4>
+                      @for (issue of resumeService.atsScore()!.issues; track $index) {
+                        <div class="issue-item" [class]="'severity-' + issue.severity">
+                          <div class="issue-header">
+                            <span class="severity-badge">{{ issue.severity }}</span>
+                            <span class="issue-category">{{ issue.category }}</span>
+                          </div>
+                          <div class="issue-title">{{ issue.issue }}</div>
+                          <div class="issue-description">{{ issue.description }}</div>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if (resumeService.atsScore()!.recommendations.length > 0) {
+                    <div class="ats-recommendations">
+                      <h4>Recommendations</h4>
+                      @for (rec of resumeService.atsScore()!.recommendations; track $index) {
+                        <div class="recommendation-item">
+                          <div class="rec-icon">💡</div>
+                          <div class="rec-content">
+                            <div class="rec-title">{{ rec.recommendation }}</div>
+                            <div class="rec-benefit">{{ rec.benefit }}</div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+
+              <div class="action-buttons">
+                <button
+                  (click)="rewriteCV()"
+                  class="btn-primary btn-full-width"
+                  [disabled]="resumeService.isLoading()">
+                  @if (resumeService.isLoading()) {
+                    <span>🚀 Rewriting CV with AI...</span>
+                  } @else {
+                    <span>🚀 Optimize My Resume with AI</span>
+                  }
+                </button>
+              </div>
+
+              <!-- Job Description Matcher Section -->
+              <div class="job-matcher-section">
+                <button
+                  (click)="toggleJobMatcher()"
+                  class="btn-feature"
+                  type="button">
+                  🎯 {{ showJobMatcher() ? 'Hide' : 'Match to' }} Job Description
+                </button>
+
+                @if (showJobMatcher()) {
+                  <div class="job-matcher-card">
+                    <h3>Tailor Your Resume to a Specific Job</h3>
+                    <p class="subtitle">Paste the job description below to see how well your resume matches</p>
+
+                    <textarea
+                      [(ngModel)]="jobDescription"
+                      placeholder="Paste the full job description here...
+
+Example:
+We are looking for a Senior Software Engineer with:
+- 5+ years of React and Node.js experience
+- Strong knowledge of AWS and Docker
+- Experience with CI/CD pipelines
+..."
+                      rows="10"
+                      class="job-description-input"></textarea>
+
+                    <div class="matcher-actions">
+                      <button
+                        (click)="analyzeJobMatch()"
+                        [disabled]="isAnalyzingMatch() || !jobDescription() || jobDescription().length < 50"
+                        class="btn-analyze"
+                        type="button">
+                        @if (isAnalyzingMatch()) {
+                          <span>🔍 Analyzing Match...</span>
+                        } @else {
+                          <span>📊 Analyze Match Score</span>
+                        }
+                      </button>
+
+                      <button
+                        (click)="tailorResumeForJob()"
+                        [disabled]="isTailoringResume() || !jobDescription() || jobDescription().length < 50"
+                        class="btn-tailor"
+                        type="button">
+                        @if (isTailoringResume()) {
+                          <span>✨ Tailoring Resume...</span>
+                        } @else {
+                          <span>✨ Tailor My Resume</span>
+                        }
+                      </button>
+                    </div>
+
+                    @if (resumeService.jobMatchAnalysis()) {
+                      <div class="quick-match-result">
+                        <div class="match-score-badge" [style.background]="getMatchScoreColor(resumeService.jobMatchAnalysis()!.matchScore)">
+                          <div class="score-number">{{ resumeService.jobMatchAnalysis()!.matchScore }}%</div>
+                          <div class="score-label">Match Score</div>
+                        </div>
+                        <div class="match-summary">
+                          <strong>{{ getScoreLabel(resumeService.jobMatchAnalysis()!.matchScore) }}</strong>
+                          <p>{{ resumeService.jobMatchAnalysis()!.summary }}</p>
+                          <button (click)="currentView.set('job-match')" class="btn-view-details" type="button">
+                            View Detailed Analysis →
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (resumeService.rewrites().length > 0) {
+          <div class="history-section">
+            <h2>Recent Rewrites</h2>
+            <div class="rewrites-list">
+              @for (rewrite of resumeService.rewrites(); track rewrite.id) {
+                <div class="rewrite-item" (click)="viewRewrite(rewrite)">
+                  <div class="rewrite-info">
+                    <p class="rewrite-date">{{ rewrite.created_at | date:'medium' }}</p>
+                    <p class="rewrite-preview">{{ rewrite.rewritten_text.substring(0, 100) }}...</p>
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Job Match Results View -->
+    @if (currentView() === 'job-match' && resumeService.jobMatchAnalysis()) {
+      <div class="job-match-results">
+        <div class="results-header">
+          <h1>Job Match Analysis</h1>
+          <button (click)="currentView.set('upload')" class="btn-back" type="button">← Back to Resume</button>
+        </div>
+
+        <div class="match-score-hero">
+          <div class="score-display">
+            <div class="score-circle-large" [style.border-color]="getMatchScoreColor(resumeService.jobMatchAnalysis()!.matchScore)">
+              <div class="score-number-large">{{ resumeService.jobMatchAnalysis()!.matchScore }}%</div>
+              <div class="score-label-large">{{ getScoreLabel(resumeService.jobMatchAnalysis()!.matchScore) }}</div>
+            </div>
+          </div>
+          <p class="match-summary">{{ resumeService.jobMatchAnalysis()!.summary }}</p>
+        </div>
+
+        <div class="analysis-grid">
+          <div class="analysis-card strengths">
+            <h3>✅ Your Strengths</h3>
+            <ul>
+              @for (strength of resumeService.jobMatchAnalysis()!.analysis.strengths; track $index) {
+                <li>{{ strength }}</li>
+              }
+            </ul>
+          </div>
+
+          <div class="analysis-card gaps">
+            <h3>⚠️ Areas to Improve</h3>
+            <ul>
+              @for (gap of resumeService.jobMatchAnalysis()!.analysis.gaps; track $index) {
+                <li>{{ gap }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+
+        @if (resumeService.jobMatchAnalysis()!.keywords.missing.length > 0) {
+          <div class="keywords-section">
+            <h3>🔑 Missing Keywords (Add These to Your Resume)</h3>
+            <div class="keywords-grid">
+              @for (keyword of resumeService.jobMatchAnalysis()!.keywords.missing; track $index) {
+                <div class="keyword-chip" [class]="'importance-' + keyword.importance">
+                  <span class="keyword-text">{{ keyword.keyword }}</span>
+                  <span class="keyword-badge">{{ keyword.importance }} priority</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="match-actions">
+          <button
+            (click)="tailorResumeForJob()"
+            class="btn-primary-large"
+            [disabled]="isTailoringResume()"
+            type="button">
+            @if (isTailoringResume()) {
+              <span>✨ Tailoring Your Resume...</span>
+            } @else {
+              <span>✨ Auto-Tailor Resume to This Job</span>
+            }
+          </button>
+          <p class="action-hint">Our AI will rewrite your resume to include missing keywords and boost your match score!</p>
+        </div>
+      </div>
+    }
+
+    @if (currentView() === 'result') {
+      <div class="result-section">
+        <div class="result-header">
+          <h1>Your Optimized Resume</h1>
+          <div class="result-actions">
+            <button (click)="downloadPDF()" class="btn-primary">Download PDF</button>
+            <button (click)="startNew()" class="btn-outline">Start New</button>
+          </div>
+        </div>
+
+        <!-- ATS Score Comparison -->
+        @if (originalAtsScore() !== null && rewrittenAtsScore() !== null) {
+          <div class="ats-comparison-card">
+            <h3>ATS Score Improvement</h3>
+            <div class="score-comparison">
+              <div class="score-box before">
+                <div class="score-label">Before</div>
+                <div class="score-big">{{ originalAtsScore() }}</div>
+                <div class="score-suffix">/100</div>
+              </div>
+              <div class="score-arrow">
+                @if (rewrittenAtsScore()! > originalAtsScore()!) {
+                  <span class="improvement">↗ +{{ rewrittenAtsScore()! - originalAtsScore()! }}</span>
+                } @else if (rewrittenAtsScore()! < originalAtsScore()!) {
+                  <span class="decline">↘ {{ rewrittenAtsScore()! - originalAtsScore()! }}</span>
+                } @else {
+                  <span class="same">→ No change</span>
+                }
+              </div>
+              <div class="score-box after">
+                <div class="score-label">After AI Rewrite</div>
+                <div class="score-big" [class.improved]="rewrittenAtsScore()! > originalAtsScore()!">
+                  {{ rewrittenAtsScore() }}
+                </div>
+                <div class="score-suffix">/100</div>
+              </div>
+            </div>
+            @if (rewrittenAtsScore()! > originalAtsScore()!) {
+              <div class="improvement-message success">
+                🎉 Great! Your ATS score improved by {{ rewrittenAtsScore()! - originalAtsScore()! }} points!
+              </div>
+            } @else if (rewrittenAtsScore()! < originalAtsScore()!) {
+              <div class="improvement-message warning">
+                ⚠️ Note: The rewrite reduced your ATS score. You may want to manually adjust based on the ATS feedback above.
+              </div>
+            }
+          </div>
+        }
+
+        <div class="comparison-view">
+          <div class="text-panel">
+            <div class="panel-header">
+              <h3>Original</h3>
+            </div>
+            <div class="text-content">
+              <pre>{{ originalText() }}</pre>
+            </div>
+          </div>
+
+          <div class="text-panel">
+            <div class="panel-header">
+              <h3>AI Rewritten</h3>
+              <button (click)="copyToClipboard(rewrittenText())" class="btn-copy">Copy</button>
+            </div>
+            <div class="text-content">
+              <pre>{{ rewrittenText() }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Template Selector Modal -->
+    @if (showTemplateSelector()) {
+      <div class="template-modal-overlay" (click)="closeTemplateSelector()">
+        <div class="template-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Choose Your Professional Template</h2>
+            <p class="modal-subtitle">All templates are ATS-optimized and score 90+/100</p>
+            <button class="modal-close" (click)="closeTemplateSelector()">✕</button>
+          </div>
+
+          <div class="templates-grid">
+            @for (template of templates; track template.id) {
+              <div
+                class="template-card"
+                [class.selected]="selectedTemplate() === template.id"
+                (click)="selectedTemplate.set(template.id)">
+                <div class="template-preview">
+                  <span class="template-icon">{{ template.preview }}</span>
+                </div>
+                <div class="template-info">
+                  <h3>{{ template.name }}</h3>
+                  <p>{{ template.description }}</p>
+                  <div class="template-badge">ATS Score: 90+</div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button
+              class="btn-outline"
+              (click)="closeTemplateSelector()"
+              [disabled]="isGeneratingTemplate()">
+              Cancel
+            </button>
+            <button
+              class="btn-primary"
+              (click)="downloadWithTemplate(selectedTemplate())"
+              [disabled]="isGeneratingTemplate()">
+              @if (isGeneratingTemplate()) {
+                <span class="loading-spinner"></span>
+                <span>Generating PDF...</span>
+              } @else {
+                <span>Generate PDF with {{ getSelectedTemplateName() }}</span>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

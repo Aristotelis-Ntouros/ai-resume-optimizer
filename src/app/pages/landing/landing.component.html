@@ -1,0 +1,301 @@
+<div class="landing-page">
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="36" height="36" rx="8" fill="url(#gradient)"/>
+          <path d="M13 10 C13 9.5 13.5 9 14 9 L23 9 L27 13 L27 29 C27 29.5 26.5 30 26 30 L14 30 C13.5 30 13 29.5 13 29 Z" fill="white" opacity="0.95"/>
+          <path d="M23 9 L23 13 L27 13" fill="none" stroke="white" stroke-width="1" opacity="0.7"/>
+          <path d="M16.5 20 L18.5 22 L23.5 17" fill="none" stroke="url(#gradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="25" cy="25" r="4.5" fill="#10b981"/>
+          <text x="25" y="27" font-family="Arial, sans-serif" font-size="5" font-weight="700" fill="white" text-anchor="middle">AI</text>
+        </svg>
+        <span class="logo-text">Resu<span class="logo-accent">Match</span></span>
+      </div>
+      <div class="nav-links">
+        @if (authService.isAuthenticated()) {
+          <a routerLink="/dashboard" class="nav-link">Dashboard</a>
+          <button (click)="authService.signOut()" class="btn-outline">Sign Out</button>
+        } @else {
+          <a routerLink="/login" class="nav-link">Login</a>
+          <a routerLink="/signup" class="btn-primary-nav">Get Started</a>
+        }
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Gradient -->
+  <section class="hero-modern">
+    <div class="hero-bg-gradient"></div>
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="badge">🚀 #1 AI-Powered Resume Optimizer</div>
+        <h1 class="hero-title-modern">
+          Land Your<br/>
+          <span class="gradient-text">Dream Job</span><br/>
+          With AI-Tailored Resumes
+        </h1>
+        <p class="hero-subtitle-modern">
+          Match any job description with 90%+ accuracy. Our AI rewrites your resume
+          to include missing keywords and optimize for ATS systems in seconds.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-number">90%+</div>
+            <div class="stat-label">Match Rate</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">10s</div>
+            <div class="stat-label">AI Processing</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">Free</div>
+            <div class="stat-label">Get Started</div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button (click)="navigateToDashboard()" class="btn-hero">
+            <span>Start Optimizing for Free</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="btn-hero-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <span>Watch Demo</span>
+          </button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="floating-card card-1">
+          <div class="card-header">
+            <div class="card-icon">📊</div>
+            <div class="card-title">Match Score</div>
+          </div>
+          <div class="card-score">
+            <div class="score-circle">
+              <div class="score-value">88%</div>
+            </div>
+            <div class="score-label">Excellent Match!</div>
+          </div>
+        </div>
+        <div class="floating-card card-2">
+          <div class="card-header">
+            <div class="card-icon">✨</div>
+            <div class="card-title">Missing Keywords</div>
+          </div>
+          <div class="keyword-tags">
+            <span class="keyword-tag">AWS</span>
+            <span class="keyword-tag">Docker</span>
+            <span class="keyword-tag">CI/CD</span>
+          </div>
+        </div>
+        <div class="floating-card card-3">
+          <div class="card-header">
+            <div class="card-icon">🎯</div>
+            <div class="card-title">ATS Score</div>
+          </div>
+          <div class="ats-progress">
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">92/100</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Job Matcher Feature Highlight -->
+  <section class="feature-spotlight">
+    <div class="container">
+      <div class="spotlight-badge">⭐ NEW FEATURE</div>
+      <h2 class="spotlight-title">Job Description Matcher</h2>
+      <p class="spotlight-subtitle">
+        The #1 feature job seekers ask for - now available for free
+      </p>
+      <div class="spotlight-content">
+        <div class="spotlight-visual">
+          <div class="browser-mockup">
+            <div class="browser-header">
+              <div class="browser-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="browser-url">🎯 Job Matcher</div>
+            </div>
+            <div class="browser-content">
+              <div class="mockup-section">
+                <div class="mockup-title">Paste Job Description</div>
+                <div class="mockup-textarea"></div>
+              </div>
+              <div class="mockup-result">
+                <div class="mockup-score">
+                  <div class="mockup-circle">75%</div>
+                  <div class="mockup-label">Fair Match</div>
+                </div>
+                <div class="mockup-keywords">
+                  <div class="mockup-keyword high">AWS</div>
+                  <div class="mockup-keyword medium">Docker</div>
+                  <div class="mockup-keyword high">Kubernetes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="spotlight-features">
+          <div class="spotlight-feature">
+            <div class="feature-icon-modern">🎯</div>
+            <h3>Instant Match Analysis</h3>
+            <p>See exactly how well your resume matches any job description in seconds</p>
+          </div>
+          <div class="spotlight-feature">
+            <div class="feature-icon-modern">🔑</div>
+            <h3>Missing Keywords Detected</h3>
+            <p>Get a ranked list of keywords you need to add to pass ATS screening</p>
+          </div>
+          <div class="spotlight-feature">
+            <div class="feature-icon-modern">✨</div>
+            <h3>Auto-Tailor Resume</h3>
+            <p>Our AI rewrites your resume to match the job - boost your score by 20-30%</p>
+          </div>
+          <div class="spotlight-feature">
+            <div class="feature-icon-modern">💰</div>
+            <h3>Competitors Charge $40/mo</h3>
+            <p>We give you this feature for FREE. No credit card required.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2 class="section-title-modern">How It Works</h2>
+      <p class="section-subtitle">Get hired faster in 3 simple steps</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Upload Resume</h3>
+            <p>Drop your PDF or DOCX file and get instant ATS score</p>
+          </div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Paste Job Description</h3>
+            <p>See match score and missing keywords instantly</p>
+          </div>
+          <div class="step-arrow">→</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>AI Tailors Resume</h3>
+            <p>Download optimized resume and start applying</p>
+          </div>
+          <div class="step-check">✓</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-modern">
+    <div class="container">
+      <h2 class="section-title-modern">Everything You Need to Get Hired</h2>
+      <div class="features-grid-modern">
+        <div class="feature-card-modern">
+          <div class="feature-icon-large">📊</div>
+          <h3>ATS Score Analysis</h3>
+          <p>Know exactly how ATS-friendly your resume is before applying</p>
+        </div>
+        <div class="feature-card-modern">
+          <div class="feature-icon-large">🎯</div>
+          <h3>Job Matcher</h3>
+          <p>Match your resume against any job description with AI precision</p>
+        </div>
+        <div class="feature-card-modern">
+          <div class="feature-icon-large">✨</div>
+          <h3>AI Rewriting</h3>
+          <p>Get professionally rewritten resume with strong action verbs</p>
+        </div>
+        <div class="feature-card-modern">
+          <div class="feature-icon-large">📄</div>
+          <h3>5 Pro Templates</h3>
+          <p>Download as beautiful PDF with ATS-optimized formatting</p>
+        </div>
+        <div class="feature-card-modern">
+          <div class="feature-icon-large">🔑</div>
+          <h3>Keyword Optimization</h3>
+          <p>Automatically add missing keywords to pass ATS screening</p>
+        </div>
+        <div class="feature-card-modern">
+          <div class="feature-icon-large">⚡</div>
+          <h3>Instant Results</h3>
+          <p>Get your optimized resume in under 10 seconds</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-modern">
+    <div class="cta-container">
+      <div class="cta-content-modern">
+        <h2>Ready to Land Your Dream Job?</h2>
+        <p>Join thousands of professionals who've optimized their resumes with AI</p>
+        <button (click)="navigateToDashboard()" class="btn-cta">
+          Start For Free - No Credit Card Required
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="cta-features">
+          <span>✓ Free forever</span>
+          <span>✓ No credit card</span>
+          <span>✓ Instant access</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-modern">
+    <div class="footer-content-modern">
+      <div class="footer-brand">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="36" height="36" rx="8" fill="url(#gradient2)"/>
+            <path d="M13 10 C13 9.5 13.5 9 14 9 L23 9 L27 13 L27 29 C27 29.5 26.5 30 26 30 L14 30 C13.5 30 13 29.5 13 29 Z" fill="white" opacity="0.95"/>
+            <path d="M23 9 L23 13 L27 13" fill="none" stroke="white" stroke-width="1" opacity="0.7"/>
+            <path d="M16.5 20 L18.5 22 L23.5 17" fill="none" stroke="url(#gradient2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="25" cy="25" r="4.5" fill="#10b981"/>
+            <text x="25" y="27" font-family="Arial, sans-serif" font-size="5" font-weight="700" fill="white" text-anchor="middle">AI</text>
+          </svg>
+          <span>ResuMatch</span>
+        </div>
+        <p class="footer-tagline">Land your dream job with AI-powered resume matching</p>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 ResuMatch. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>
