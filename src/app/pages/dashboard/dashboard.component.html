@@ -380,18 +380,18 @@ We are looking for a Senior Software Engineer with:
                 [disabled]="isGeneratingTemplate()">
                 @if (isGeneratingTemplate()) {
                   <span>🔄 Rebuilding Your File...</span>
-                } @else if (uploadedFile()?.name.endsWith('.docx')) {
+                } @else if (uploadedFile()?.name?.endsWith('.docx')) {
                   <span>📥 Download with Original Format (DOCX)</span>
-                } @else if (uploadedFile()?.name.endsWith('.pdf')) {
+                } @else if (uploadedFile()?.name?.endsWith('.pdf')) {
                   <span>📋 Download Change Guide (PDF)</span>
                 } @else {
                   <span>📥 Download Optimized</span>
                 }
               </button>
               <div class="format-preserved-hint">
-                @if (uploadedFile()?.name.endsWith('.docx')) {
+                @if (uploadedFile()?.name?.endsWith('.docx')) {
                   Your photos, colors, and layout will be preserved automatically!
-                } @else if (uploadedFile()?.name.endsWith('.pdf')) {
+                } @else if (uploadedFile()?.name?.endsWith('.pdf')) {
                   You'll get a guide showing exactly what to change in your PDF
                 } @else {
                   Your original formatting will be preserved
