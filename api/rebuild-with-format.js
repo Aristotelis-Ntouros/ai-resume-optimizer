@@ -207,8 +207,8 @@ async function processPDF(fileBuffer, replacements) {
 
     yPosition -= lineHeight;
 
-    // Find this text
-    const findText = `FIND: "${replacement.find.substring(0, 80)}${replacement.find.length > 80 ? '...' : ''}"`;
+    // Find this text (strip emojis for PDF compatibility)
+    const findText = `FIND: "${stripEmojis(replacement.find.substring(0, 80))}${replacement.find.length > 80 ? '...' : ''}"`;
     page.drawText(findText, {
       x: margin + 10,
       y: yPosition,
@@ -219,8 +219,8 @@ async function processPDF(fileBuffer, replacements) {
 
     yPosition -= lineHeight;
 
-    // Replace with
-    const replaceText = `REPLACE WITH: "${replacement.replace.substring(0, 70)}${replacement.replace.length > 70 ? '...' : ''}"`;
+    // Replace with (strip emojis for PDF compatibility)
+    const replaceText = `REPLACE WITH: "${stripEmojis(replacement.replace.substring(0, 70))}${replacement.replace.length > 70 ? '...' : ''}"`;
     page.drawText(replaceText, {
       x: margin + 10,
       y: yPosition,
@@ -239,7 +239,7 @@ async function processPDF(fileBuffer, replacements) {
   }
 
   yPosition -= 20;
-  page.drawText('💡 Tip: Open your original PDF in Adobe Acrobat or similar editor', {
+  page.drawText('TIP: Open your original PDF in Adobe Acrobat or similar editor', {
     x: margin,
     y: yPosition,
     size: 10,
@@ -328,4 +328,9 @@ async function processDOCX(fileBuffer, replacements) {
 
 function escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function stripEmojis(text) {
+  // Remove emojis and other special Unicode characters that WinAnsi can't encode
+  return text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
 }
