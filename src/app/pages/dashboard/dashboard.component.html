@@ -36,7 +36,11 @@
           <h1>Upload Your Resume</h1>
           <p class="subtitle">Upload your CV in PDF or DOCX format to get started</p>
 
-          <div class="upload-area">
+          <div class="upload-area"
+               (drop)="onFileDrop($event)"
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               [class.drag-over]="isDragging()">
             <input
               type="file"
               id="fileInput"

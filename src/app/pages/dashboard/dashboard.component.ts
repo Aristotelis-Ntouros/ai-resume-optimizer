@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   parsedCVData = signal<any>(null);
   isGeneratingTemplate = signal(false);
   jobDescription = signal('');
+  isDragging = signal(false);
   showJobMatcher = signal(false);
   isAnalyzingMatch = signal(false);
   isTailoringResume = signal(false);
@@ -83,6 +84,43 @@ export class DashboardComponent implements OnInit {
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
+    await this.processFile(file);
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging.set(true);
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging.set(false);
+  }
+
+  async onFileDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging.set(false);
+
+    const files = event.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    await this.processFile(file);
+  }
+
+  private async processFile(file: File) {
+    // Validate file type
+    const validTypes = ['.pdf', '.docx', '.doc', '.txt'];
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+
+    if (!validTypes.includes(fileExtension)) {
+      this.errorMessage.set('Please upload a PDF, DOCX, DOC, or TXT file');
+      return;
+    }
+
     this.uploadedFile.set(file);
     this.errorMessage.set('');
 
