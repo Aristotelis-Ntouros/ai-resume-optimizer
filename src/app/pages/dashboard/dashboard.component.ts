@@ -183,13 +183,13 @@ export class DashboardComponent implements OnInit {
     this.isGeneratingTemplate.set(true);
 
     try {
-      console.log('Starting PDF generation with template:', templateId);
+      console.log('Starting template generation:', templateId);
 
       // Parse the rewritten CV to extract structured data
       const cvData = await this.resumeService.parseCV(this.rewrittenText());
       this.parsedCVData.set(cvData);
 
-      // Generate PDF on server
+      // Generate template HTML on server
       const response = await fetch('/api/generate-template-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -197,44 +197,30 @@ export class DashboardComponent implements OnInit {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate PDF');
+        throw new Error('Failed to generate template');
       }
 
-      const contentType = response.headers.get('content-type');
+      const data = await response.json();
 
-      // Check if we got a PDF or fallback JSON
-      if (contentType?.includes('application/pdf')) {
-        // Download the PDF
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `resume_${templateId}.pdf`;
-        link.click();
-        URL.revokeObjectURL(url);
-
-        this.showTemplateSelector.set(false);
-        this.errorMessage.set('');
-      } else {
-        // Fallback: use print dialog
-        const data = await response.json();
-
-        if (data.html) {
-          const printWindow = window.open('', '_blank');
-          if (printWindow) {
-            printWindow.document.write(data.html);
-            printWindow.document.close();
-            setTimeout(() => printWindow.print(), 500);
-          }
-          this.showTemplateSelector.set(false);
-        } else {
-          throw new Error('No PDF or HTML received');
+      if (data.html) {
+        // Open print dialog with the generated template
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(data.html);
+          printWindow.document.close();
+          // Give it a moment to load, then trigger print
+          setTimeout(() => {
+            printWindow.print();
+          }, 1000);
         }
+        this.showTemplateSelector.set(false);
+      } else {
+        throw new Error('No HTML template received');
       }
 
     } catch (error: any) {
-      console.error('PDF generation error:', error);
-      this.errorMessage.set(error.message || 'Failed to generate PDF with template');
+      console.error('Template generation error:', error);
+      this.errorMessage.set(error.message || 'Failed to generate template');
     } finally {
       this.isGeneratingTemplate.set(false);
     }

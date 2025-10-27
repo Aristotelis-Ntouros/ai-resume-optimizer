@@ -1,6 +1,3 @@
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
-
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -27,55 +24,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'CV data and template name are required' });
     }
 
-    console.log('Generating template HTML...');
+    console.log('Generating template HTML for:', templateName);
     const html = generateTemplateHTML(cvData, templateName);
 
-    // Try to generate PDF with Puppeteer, fallback to returning HTML if it fails
-    try {
-      console.log('Launching Chromium...');
-      const browser = await puppeteer.launch({
-        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: true,
-      });
-
-      const page = await browser.newPage();
-
-      console.log('Setting HTML content...');
-      await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
-
-      console.log('Generating PDF...');
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '0',
-          right: '0',
-          bottom: '0',
-          left: '0'
-        }
-      });
-
-      await browser.close();
-
-      console.log('PDF generated successfully, size:', pdfBuffer.length);
-
-      // Send PDF as downloadable file
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="resume_${templateName}.pdf"`);
-      res.send(pdfBuffer);
-
-    } catch (pdfError) {
-      console.error('PDF generation failed, returning HTML for client-side printing:', pdfError);
-
-      // Fallback: return HTML for client-side printing
-      res.status(200).json({
-        html,
-        fallback: true,
-        message: 'PDF generation unavailable, using fallback'
-      });
-    }
+    // Return HTML for client-side printing
+    // This is more reliable than server-side PDF generation on Vercel
+    res.status(200).json({
+      html,
+      message: 'Template generated successfully'
+    });
 
   } catch (error) {
     console.error('Error generating template:', error);
