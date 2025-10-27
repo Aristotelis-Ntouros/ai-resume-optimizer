@@ -200,17 +200,38 @@ export class DashboardComponent implements OnInit {
         throw new Error('Failed to generate PDF');
       }
 
-      // Download the PDF
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `resume_${templateId}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
+      const contentType = response.headers.get('content-type');
 
-      this.showTemplateSelector.set(false);
-      this.errorMessage.set('');
+      // Check if we got a PDF or fallback JSON
+      if (contentType?.includes('application/pdf')) {
+        // Download the PDF
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `resume_${templateId}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        this.showTemplateSelector.set(false);
+        this.errorMessage.set('');
+      } else {
+        // Fallback: use print dialog
+        const data = await response.json();
+
+        if (data.html) {
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(data.html);
+            printWindow.document.close();
+            setTimeout(() => printWindow.print(), 500);
+          }
+          this.showTemplateSelector.set(false);
+        } else {
+          throw new Error('No PDF or HTML received');
+        }
+      }
+
     } catch (error: any) {
       console.error('PDF generation error:', error);
       this.errorMessage.set(error.message || 'Failed to generate PDF with template');

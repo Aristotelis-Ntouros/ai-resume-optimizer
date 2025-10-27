@@ -30,44 +30,57 @@ export default async function handler(req, res) {
     console.log('Generating template HTML...');
     const html = generateTemplateHTML(cvData, templateName);
 
-    console.log('Launching Chromium...');
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
+    // Try to generate PDF with Puppeteer, fallback to returning HTML if it fails
+    try {
+      console.log('Launching Chromium...');
+      const browser = await puppeteer.launch({
+        args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: true,
+      });
 
-    const page = await browser.newPage();
+      const page = await browser.newPage();
 
-    console.log('Setting HTML content...');
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+      console.log('Setting HTML content...');
+      await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
-    console.log('Generating PDF...');
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '0',
-        right: '0',
-        bottom: '0',
-        left: '0'
-      }
-    });
+      console.log('Generating PDF...');
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '0',
+          right: '0',
+          bottom: '0',
+          left: '0'
+        }
+      });
 
-    await browser.close();
+      await browser.close();
 
-    console.log('PDF generated successfully');
+      console.log('PDF generated successfully, size:', pdfBuffer.length);
 
-    // Send PDF as downloadable file
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="resume_${templateName}.pdf"`);
-    res.send(pdfBuffer);
+      // Send PDF as downloadable file
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="resume_${templateName}.pdf"`);
+      res.send(pdfBuffer);
+
+    } catch (pdfError) {
+      console.error('PDF generation failed, returning HTML for client-side printing:', pdfError);
+
+      // Fallback: return HTML for client-side printing
+      res.status(200).json({
+        html,
+        fallback: true,
+        message: 'PDF generation unavailable, using fallback'
+      });
+    }
 
   } catch (error) {
-    console.error('Error generating template PDF:', error);
+    console.error('Error generating template:', error);
     res.status(500).json({
-      error: 'Failed to generate template PDF',
+      error: 'Failed to generate template',
       details: error.message
     });
   }
