@@ -172,24 +172,6 @@
                 </div>
               }
 
-              <!-- Formatting Preference -->
-              <div class="formatting-option">
-                <label class="checkbox-label">
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="preserveFormatting"
-                    class="checkbox-input">
-                  <span class="checkbox-text">
-                    <strong>I have my own CV template (keep my design, images, colors)</strong>
-                    <span class="checkbox-hint">
-                      ✓ Our AI will only improve your content (words, achievements, keywords)<br>
-                      ✓ You'll get optimized text to copy back into your original document<br>
-                      ✓ Your images, colors, fonts, and layout stay exactly the same
-                    </span>
-                  </span>
-                </label>
-              </div>
-
               <div class="action-buttons">
                 <button
                   (click)="rewriteCV()"
@@ -373,33 +355,7 @@ We are looking for a Senior Software Engineer with:
         <div class="result-header">
           <h1>Your Optimized Resume</h1>
           <div class="result-actions">
-            @if (preserveFormatting()) {
-              <button
-                (click)="downloadPDF()"
-                class="btn-primary"
-                [disabled]="isGeneratingTemplate()">
-                @if (isGeneratingTemplate()) {
-                  <span>🔄 Rebuilding Your File...</span>
-                } @else if (uploadedFile()?.name?.endsWith('.docx')) {
-                  <span>📥 Download with Original Format (DOCX)</span>
-                } @else if (uploadedFile()?.name?.endsWith('.pdf')) {
-                  <span>📋 Download Change Guide (PDF)</span>
-                } @else {
-                  <span>📥 Download Optimized</span>
-                }
-              </button>
-              <div class="format-preserved-hint">
-                @if (uploadedFile()?.name?.endsWith('.docx')) {
-                  Your photos, colors, and layout will be preserved automatically!
-                } @else if (uploadedFile()?.name?.endsWith('.pdf')) {
-                  You'll get a guide showing exactly what to change in your PDF
-                } @else {
-                  Your original formatting will be preserved
-                }
-              </div>
-            } @else {
-              <button (click)="downloadPDF()" class="btn-primary">Download PDF</button>
-            }
+            <button (click)="downloadPDF()" class="btn-primary">Download PDF</button>
             <button (click)="startNew()" class="btn-outline">Start New</button>
           </div>
         </div>

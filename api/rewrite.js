@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text, type, atsIssues, preserveFormatting } = req.body;
+    const { text, type, atsIssues } = req.body;
 
     if (!text) {
       return res.status(400).json({ error: 'Text is required' });
@@ -40,21 +40,6 @@ export default async function handler(req, res) {
           ).join('\n')}\n\nYou MUST address all these issues in the rewrite.`
         : '';
 
-      // Build formatting instructions based on user preference
-      const formattingInstructions = preserveFormatting
-        ? `\n\n**CRITICAL: PRESERVE ORIGINAL FORMATTING & CONTENT**\nThe user wants to keep their existing template. You MUST:
-- Include EVERY SINGLE section from the original (Name, Contact, Summary, Skills, Languages, Interests, Work Experience, Education, etc.)
-- Keep ALL content - do NOT delete or remove anything
-- Preserve the EXACT structure and order of sections
-- Only ENHANCE the content: strengthen action verbs, quantify achievements where possible, add relevant keywords
-- If a section has content in the original, it MUST have content in the rewritten version
-- Keep the same formatting style (bullet points, headers, spacing)
-- Return the COMPLETE resume with all information preserved and enhanced`
-        : `6. Use SIMPLE FORMATTING - No tables, no columns, no special characters
-7. Include standard sections: Contact, Summary, Experience, Education, Skills
-8. Keep it ATS-FRIENDLY - single column, standard bullet points (•), clear headers
-9. Aim for 400-800 words total`;
-
       prompt = `You are a professional resume writer specializing in ATS (Applicant Tracking System) optimization.
 
 CRITICAL REQUIREMENTS:
@@ -63,7 +48,10 @@ CRITICAL REQUIREMENTS:
 3. Use STRONG ACTION VERBS (achieved, developed, led, managed, created, implemented, increased, reduced, optimized)
 4. QUANTIFY achievements - Add numbers, percentages, dollar amounts, team sizes where appropriate for EACH specific role
 5. Include KEYWORDS relevant to each specific role (technologies, skills, tools, methodologies used in THAT job)
-${formattingInstructions}
+6. Use SIMPLE FORMATTING - No tables, no columns, no special characters
+7. Include standard sections: Contact, Summary, Experience, Education, Skills
+8. Keep it ATS-FRIENDLY - single column, standard bullet points (•), clear headers
+9. Aim for 400-800 words total
 10. **DOUBLE CHECK** - Before finalizing, verify that each job description matches its job title and time period${atsInstructions}
 
 CV to rewrite:

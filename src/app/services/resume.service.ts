@@ -105,27 +105,9 @@ export class ResumeService {
 
   constructor(private authService: AuthService) {}
 
-  async rewriteCV(cvText: string, preserveFormatting: boolean = false): Promise<string> {
+  async rewriteCV(cvText: string): Promise<string> {
     this.isLoading.set(true);
     try {
-      // If preserving formatting, use the special enhance-preserve endpoint
-      if (preserveFormatting) {
-        const response = await fetch('/api/enhance-preserve', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: cvText })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to enhance CV');
-        }
-
-        const data = await response.json();
-        await this.saveRewrite(cvText, data.rewrittenText, 'cv');
-        return data.rewrittenText;
-      }
-
-      // Otherwise, use the full rewrite with ATS optimization
       const atsIssues = this.atsScore()?.issues || [];
 
       const response = await fetch('/api/rewrite', {
@@ -134,8 +116,7 @@ export class ResumeService {
         body: JSON.stringify({
           text: cvText,
           type: 'cv',
-          atsIssues: atsIssues,
-          preserveFormatting: false
+          atsIssues: atsIssues
         })
       });
 
