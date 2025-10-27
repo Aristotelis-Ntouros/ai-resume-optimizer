@@ -27,7 +27,9 @@
 
   <div class="dashboard-content">
     @if (errorMessage()) {
-      <div class="error-banner">{{ errorMessage() }}</div>
+      <div [class]="errorMessage().startsWith('✅') ? 'success-banner' : 'error-banner'">
+        {{ errorMessage() }}
+      </div>
     }
 
     @if (currentView() === 'upload') {
@@ -178,8 +180,12 @@
                     [(ngModel)]="preserveFormatting"
                     class="checkbox-input">
                   <span class="checkbox-text">
-                    <strong>Keep my original formatting</strong>
-                    <span class="checkbox-hint">Improve content only, preserve your existing template and layout</span>
+                    <strong>I have my own CV template (keep my design, images, colors)</strong>
+                    <span class="checkbox-hint">
+                      ✓ Our AI will only improve your content (words, achievements, keywords)<br>
+                      ✓ You'll get optimized text to copy back into your original document<br>
+                      ✓ Your images, colors, fonts, and layout stay exactly the same
+                    </span>
                   </span>
                 </label>
               </div>
@@ -367,7 +373,16 @@ We are looking for a Senior Software Engineer with:
         <div class="result-header">
           <h1>Your Optimized Resume</h1>
           <div class="result-actions">
-            <button (click)="downloadPDF()" class="btn-primary">Download PDF</button>
+            @if (preserveFormatting()) {
+              <button (click)="copyToClipboard(rewrittenText())" class="btn-primary">
+                📋 Copy Optimized Text
+              </button>
+              <div class="format-preserved-hint">
+                Paste this into your original CV document to keep your design!
+              </div>
+            } @else {
+              <button (click)="downloadPDF()" class="btn-primary">Download PDF</button>
+            }
             <button (click)="startNew()" class="btn-outline">Start New</button>
           </div>
         </div>

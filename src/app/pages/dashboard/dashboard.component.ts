@@ -338,8 +338,20 @@ export class DashboardComponent implements OnInit {
     this.currentView.set('result');
   }
 
-  copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text);
+  async copyToClipboard(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Show success message
+      const originalError = this.errorMessage();
+      this.errorMessage.set('✅ Copied to clipboard! Now paste it into your original CV document.');
+      setTimeout(() => {
+        if (this.errorMessage() === '✅ Copied to clipboard! Now paste it into your original CV document.') {
+          this.errorMessage.set(originalError);
+        }
+      }, 5000);
+    } catch (error) {
+      this.errorMessage.set('Failed to copy to clipboard. Please manually select and copy the text.');
+    }
   }
 
   toggleJobMatcher() {
