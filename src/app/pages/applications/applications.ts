@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { JobApplicationService } from '../../services/job-application.service';
 import { JobApplication } from '../../models/job-application.model';
+import { FileService } from '../../services/file.service';
 
 @Component({
   selector: 'app-applications',
@@ -16,8 +17,6 @@ export class Applications implements OnInit {
   selectedStatus = signal<string>('all');
   showNewApplicationModal = signal(false);
   isCreating = signal(false);
-  showResumeModal = signal(false);
-  selectedResume = signal<string | null>(null);
 
   // New application form
   newApplication = {
@@ -40,7 +39,8 @@ export class Applications implements OnInit {
 
   constructor(
     public jobAppService: JobApplicationService,
-    private router: Router
+    private router: Router,
+    private fileService: FileService
   ) {}
 
   ngOnInit() {
@@ -140,23 +140,14 @@ export class Applications implements OnInit {
   }
 
   viewTailoredResume(app: JobApplication) {
-    this.selectedResume.set(app.tailored_resume_text || null);
-    this.showResumeModal.set(true);
-  }
+    if (!app.tailored_resume_text) return;
 
-  closeResumeModal() {
-    this.showResumeModal.set(false);
-    this.selectedResume.set(null);
-  }
+    // Generate filename from company and job title
+    const filename = `${app.company_name}_${app.job_title}_Resume.pdf`
+      .replace(/[^a-zA-Z0-9_]/g, '_')
+      .replace(/_+/g, '_');
 
-  async copyResumeToClipboard() {
-    if (!this.selectedResume()) return;
-
-    try {
-      await navigator.clipboard.writeText(this.selectedResume()!);
-      alert('Resume copied to clipboard!');
-    } catch (error) {
-      alert('Failed to copy to clipboard. Please manually select and copy the text.');
-    }
+    // Download the tailored resume as PDF
+    this.fileService.downloadAsPDF(app.tailored_resume_text, filename);
   }
 }
