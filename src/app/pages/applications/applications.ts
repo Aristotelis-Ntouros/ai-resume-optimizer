@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { JobApplicationService } from '../../services/job-application.service';
 import { JobApplication } from '../../models/job-application.model';
 import { FileService } from '../../services/file.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-applications',
@@ -43,7 +44,8 @@ export class Applications implements OnInit {
   constructor(
     public jobAppService: JobApplicationService,
     private router: Router,
-    private fileService: FileService
+    private fileService: FileService,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
