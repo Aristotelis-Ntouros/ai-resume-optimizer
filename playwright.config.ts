@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: 'html',
   timeout: 120000, // 2 minutes per test (AI operations can be slow)
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'https://ai-resume-optimizer-jade.vercel.app',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -23,10 +23,5 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Remove webServer config - tests will run against production
 });
