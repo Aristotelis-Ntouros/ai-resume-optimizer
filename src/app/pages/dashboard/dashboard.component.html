@@ -19,6 +19,7 @@
         <span>ResuMatch</span>
       </div>
       <div class="nav-links">
+        <a routerLink="/applications" class="nav-link">My Applications</a>
         <span class="user-email">{{ authService.currentUser()?.email }}</span>
         <button (click)="authService.signOut()" class="btn-outline">Sign Out</button>
       </div>

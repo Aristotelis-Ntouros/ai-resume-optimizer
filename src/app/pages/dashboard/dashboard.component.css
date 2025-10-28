@@ -39,6 +39,18 @@
   gap: var(--space-lg);
 }
 
+.nav-link {
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--primary-dark);
+}
+
 .user-email {
   color: var(--gray-600);
   font-size: 0.875rem;

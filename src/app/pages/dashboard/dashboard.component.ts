@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -9,7 +9,7 @@ import { FileService } from '../../services/file.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -77,6 +77,24 @@ export class DashboardComponent implements OnInit {
       return;
     }
     this.resumeService.fetchRewrites();
+
+    // Check if we received a job description from navigation state (from applications page)
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state || (window.history.state as any);
+
+    if (state?.jobDescription) {
+      // Pre-fill the job description and show the job matcher
+      this.jobDescription.set(state.jobDescription);
+      this.showJobMatcher.set(true);
+
+      // Scroll to job matcher section after a short delay
+      setTimeout(() => {
+        const jobMatcherElement = document.querySelector('.job-matcher-section');
+        if (jobMatcherElement) {
+          jobMatcherElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   }
 
   async onFileSelected(event: Event) {
