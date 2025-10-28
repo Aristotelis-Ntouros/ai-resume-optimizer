@@ -35,4 +35,17 @@ export class LoginComponent {
       this.isLoading.set(false);
     }
   }
+
+  async signInWithGoogle() {
+    this.errorMessage.set('');
+    this.isLoading.set(true);
+
+    try {
+      await this.authService.signInWithGoogle();
+      // OAuth will redirect automatically
+    } catch (error: any) {
+      this.errorMessage.set(error.message || 'Failed to sign in with Google');
+      this.isLoading.set(false);
+    }
+  }
 }

@@ -59,4 +59,17 @@ export class SignupComponent {
       this.isLoading.set(false);
     }
   }
+
+  async signUpWithGoogle() {
+    this.errorMessage.set('');
+    this.isLoading.set(true);
+
+    try {
+      await this.authService.signInWithGoogle();
+      // OAuth will redirect automatically
+    } catch (error: any) {
+      this.errorMessage.set(error.message || 'Failed to sign up with Google');
+      this.isLoading.set(false);
+    }
+  }
 }
