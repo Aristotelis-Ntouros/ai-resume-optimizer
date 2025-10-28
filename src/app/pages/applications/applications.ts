@@ -23,8 +23,10 @@ export class Applications implements OnInit {
   selectedResumeHtml = signal<string>('');
   currentApplication = signal<JobApplication | null>(null);
   showTemplateSelector = signal(false);
+  showResumePreview = signal(false);
   isGeneratingTemplate = signal(false);
   selectedTemplate = signal<string>('modern');
+  previewHtml = signal<string>('');
 
   templates = [
     {
@@ -194,66 +196,11 @@ export class Applications implements OnInit {
     this.selectedTemplate.set('modern');
   }
 
-  async generateResumeWithTemplate(templateId: string) {
+  async previewResumeWithTemplate(templateId: string) {
     const app = this.currentApplication();
     if (!app || !app.tailored_resume_text) return;
 
     this.isGeneratingTemplate.set(true);
-
-    // Open window IMMEDIATELY to avoid popup blocker
-    const printWindow = window.open('', '_blank');
-
-    if (!printWindow) {
-      alert('Could not open print window. Please allow popups and try again.');
-      this.isGeneratingTemplate.set(false);
-      return;
-    }
-
-    // Show loading message
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          }
-          .loading {
-            text-align: center;
-            color: white;
-          }
-          .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-          }
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-          h2 { margin: 0 0 10px; font-size: 24px; }
-          p { margin: 0; opacity: 0.9; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <div class="loading">
-          <div class="spinner"></div>
-          <h2>Generating Your Resume</h2>
-          <p>Creating professional ${templateId} template...</p>
-        </div>
-      </body>
-      </html>
-    `);
 
     try {
       // Parse the CV data
@@ -273,25 +220,40 @@ export class Applications implements OnInit {
       const data = await response.json();
 
       if (data.html) {
-        // Replace loading screen with actual resume
-        printWindow.document.open();
-        printWindow.document.write(data.html);
-        printWindow.document.close();
-        printWindow.focus();
-
-        // Auto-trigger print dialog after a short delay
-        setTimeout(() => {
-          printWindow.print();
-        }, 500);
-
-        this.closeTemplateSelector();
+        this.previewHtml.set(data.html);
+        this.showTemplateSelector.set(false);
+        this.showResumePreview.set(true);
       }
     } catch (error) {
       console.error('Error generating template:', error);
-      printWindow.close();
       alert('Failed to generate resume template. Please try again.');
     } finally {
       this.isGeneratingTemplate.set(false);
     }
+  }
+
+  closeResumePreview() {
+    this.showResumePreview.set(false);
+    this.previewHtml.set('');
+    this.currentApplication.set(null);
+  }
+
+  downloadCurrentResume() {
+    // Open the preview HTML in a new window and trigger print
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+      alert('Could not open print window. Please allow popups and try again.');
+      return;
+    }
+
+    printWindow.document.write(this.previewHtml());
+    printWindow.document.close();
+    printWindow.focus();
+
+    // Auto-trigger print dialog
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
   }
 }
