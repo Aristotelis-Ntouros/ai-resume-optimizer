@@ -438,7 +438,7 @@ export class DashboardComponent implements OnInit {
       if (this.currentApplicationId()) {
         await this.jobAppService.updateApplication(this.currentApplicationId()!, {
           tailored_resume_text: tailored,
-          match_score: matchResult.score
+          match_score: matchResult.matchScore
         });
       }
 
