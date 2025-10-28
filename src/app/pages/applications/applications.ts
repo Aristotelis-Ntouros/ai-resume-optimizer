@@ -6,6 +6,7 @@ import { JobApplicationService } from '../../services/job-application.service';
 import { JobApplication } from '../../models/job-application.model';
 import { FileService } from '../../services/file.service';
 import { AuthService } from '../../services/auth.service';
+import { ResumeService } from '../../services/resume.service';
 
 @Component({
   selector: 'app-applications',
@@ -21,6 +22,42 @@ export class Applications implements OnInit {
   showResumePreviewModal = signal(false);
   selectedResumeHtml = signal<string>('');
   currentApplication = signal<JobApplication | null>(null);
+  showTemplateSelector = signal(false);
+  isGeneratingTemplate = signal(false);
+  selectedTemplate = signal<string>('modern');
+
+  templates = [
+    {
+      id: 'modern',
+      name: 'Modern Tech',
+      description: 'Clean and minimal, perfect for tech roles',
+      preview: '🎨'
+    },
+    {
+      id: 'executive',
+      name: 'Executive',
+      description: 'Professional and bold, ideal for leadership',
+      preview: '👔'
+    },
+    {
+      id: 'minimal',
+      name: 'Minimal',
+      description: 'Ultra-clean, distraction-free design',
+      preview: '⚡'
+    },
+    {
+      id: 'creative',
+      name: 'Creative',
+      description: 'Stylish yet ATS-safe, for creative roles',
+      preview: '✨'
+    },
+    {
+      id: 'academic',
+      name: 'Academic',
+      description: 'Traditional format for research/academic',
+      preview: '🎓'
+    }
+  ];
 
   // New application form
   newApplication = {
@@ -45,7 +82,8 @@ export class Applications implements OnInit {
     public jobAppService: JobApplicationService,
     private router: Router,
     private fileService: FileService,
-    public authService: AuthService
+    public authService: AuthService,
+    private resumeService: ResumeService
   ) {}
 
   ngOnInit() {
@@ -144,65 +182,116 @@ export class Applications implements OnInit {
     });
   }
 
-  convertResumeTextToHtml(text: string): string {
-    // Convert plain text resume to formatted HTML
-    const lines = text.split('\n');
-    let html = '<div class="resume-document">';
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-
-      if (!line) {
-        html += '<div class="spacing"></div>';
-        continue;
-      }
-
-      // Detect headers (all caps or lines with certain keywords)
-      if (line === line.toUpperCase() && line.length > 2 && line.length < 50) {
-        html += `<h2 class="section-header">${line}</h2>`;
-      }
-      // Detect contact info or single lines with special characters
-      else if (line.includes('@') || line.includes('|') || line.includes('•')) {
-        html += `<p class="contact-line">${line}</p>`;
-      }
-      // Detect bullet points
-      else if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
-        html += `<p class="bullet-point">${line}</p>`;
-      }
-      // Regular paragraph
-      else {
-        html += `<p class="resume-line">${line}</p>`;
-      }
-    }
-
-    html += '</div>';
-    return html;
-  }
-
   viewTailoredResume(app: JobApplication) {
     if (!app.tailored_resume_text) return;
 
     this.currentApplication.set(app);
-    this.selectedResumeHtml.set(this.convertResumeTextToHtml(app.tailored_resume_text));
-    this.showResumePreviewModal.set(true);
+    this.showTemplateSelector.set(true);
   }
 
-  closeResumePreview() {
-    this.showResumePreviewModal.set(false);
-    this.selectedResumeHtml.set('');
-    this.currentApplication.set(null);
+  closeTemplateSelector() {
+    this.showTemplateSelector.set(false);
+    this.selectedTemplate.set('modern');
   }
 
-  downloadResumeAsPdf() {
+  async generateResumeWithTemplate(templateId: string) {
     const app = this.currentApplication();
     if (!app || !app.tailored_resume_text) return;
 
-    // Generate filename from company and job title
-    const filename = `${app.company_name}_${app.job_title}_Resume.pdf`
-      .replace(/[^a-zA-Z0-9_]/g, '_')
-      .replace(/_+/g, '_');
+    this.isGeneratingTemplate.set(true);
 
-    // Download the tailored resume as PDF
-    this.fileService.downloadAsPDF(app.tailored_resume_text, filename);
+    // Open window IMMEDIATELY to avoid popup blocker
+    const printWindow = window.open('', '_blank');
+
+    if (!printWindow) {
+      alert('Could not open print window. Please allow popups and try again.');
+      this.isGeneratingTemplate.set(false);
+      return;
+    }
+
+    // Show loading message
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          }
+          .loading {
+            text-align: center;
+            color: white;
+          }
+          .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+          h2 { margin: 0 0 10px; font-size: 24px; }
+          p { margin: 0; opacity: 0.9; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="loading">
+          <div class="spinner"></div>
+          <h2>Generating Your Resume</h2>
+          <p>Creating professional ${templateId} template...</p>
+        </div>
+      </body>
+      </html>
+    `);
+
+    try {
+      // Parse the CV data
+      const cvData = await this.resumeService.parseCV(app.tailored_resume_text);
+
+      // Generate template HTML
+      const response = await fetch('/api/generate-template-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cvData, templateName: templateId })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate template');
+      }
+
+      const data = await response.json();
+
+      if (data.html) {
+        // Replace loading screen with actual resume
+        printWindow.document.open();
+        printWindow.document.write(data.html);
+        printWindow.document.close();
+        printWindow.focus();
+
+        // Auto-trigger print dialog after a short delay
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+
+        this.closeTemplateSelector();
+      }
+    } catch (error) {
+      console.error('Error generating template:', error);
+      printWindow.close();
+      alert('Failed to generate resume template. Please try again.');
+    } finally {
+      this.isGeneratingTemplate.set(false);
+    }
   }
 }

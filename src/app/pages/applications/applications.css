@@ -626,74 +626,81 @@ textarea.form-input {
   }
 }
 
-/* Resume Preview Modal Styles */
-.modal-resume-preview {
-  max-width: 900px;
-  max-height: 90vh;
-}
-
-.resume-preview-body {
-  padding: 0;
-  max-height: calc(90vh - 160px);
-  overflow-y: auto;
-}
-
-.resume-preview-container {
-  background: white;
-  padding: 3rem 2.5rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #1f2937;
-  line-height: 1.6;
-}
-
-.resume-document {
+/* Template Selector Modal */
+.modal-template-selector {
   max-width: 700px;
-  margin: 0 auto;
 }
 
-.resume-document .section-header {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 1.5rem 0 0.75rem 0;
-  padding-bottom: 0.375rem;
-  border-bottom: 2px solid #e5e7eb;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.resume-document .section-header:first-child {
-  margin-top: 0;
-}
-
-.resume-document .contact-line {
-  margin: 0.25rem 0;
-  font-size: 0.9375rem;
-  color: #4b5563;
+.template-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
-.resume-document .resume-line {
-  margin: 0.5rem 0;
-  font-size: 0.9375rem;
-  color: #374151;
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.resume-document .bullet-point {
-  margin: 0.375rem 0 0.375rem 1.25rem;
-  font-size: 0.9375rem;
-  color: #374151;
+.template-card {
   position: relative;
+  padding: 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
 }
 
-.resume-document .spacing {
-  height: 0.75rem;
+.template-card:hover {
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Print-like appearance */
-.resume-preview-container {
-  box-shadow: 0 0 0 1px #e5e7eb;
-  min-height: 11in;
+.template-card.selected {
+  border-color: #667eea;
+  background: #f5f7ff;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.template-preview {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.template-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.375rem 0;
+}
+
+.template-info p {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.selected-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: #667eea;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
 @media (max-width: 768px) {
@@ -721,11 +728,7 @@ textarea.form-input {
     padding-bottom: 0.5rem;
   }
 
-  .modal-resume-preview {
-    max-width: 100%;
-  }
-
-  .resume-preview-container {
-    padding: 1.5rem 1rem;
+  .template-grid {
+    grid-template-columns: 1fr;
   }
 }
