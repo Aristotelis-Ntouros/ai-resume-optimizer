@@ -234,6 +234,77 @@
   transform: translateY(0);
 }
 
+.card-resume-section {
+  padding: 1rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.resume-saved-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  border-radius: 0.375rem;
+  color: #065f46;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.resume-saved-badge svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.btn-view-resume {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-view-resume:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.modal-large {
+  max-width: 800px;
+}
+
+.resume-content {
+  background: #fafbfc;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.resume-content pre {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  color: #111827;
+}
+
 .card-footer {
   padding: 0.625rem 1rem;
   background: #fafbfc;

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ResumeService, Rewrite } from '../../services/resume.service';
 import { FileService } from '../../services/file.service';
+import { JobApplicationService } from '../../services/job-application.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +31,7 @@ export class DashboardComponent implements OnInit {
   showJobMatcher = signal(false);
   isAnalyzingMatch = signal(false);
   isTailoringResume = signal(false);
+  currentApplicationId = signal<string | null>(null);
 
   templates = [
     {
@@ -68,7 +70,8 @@ export class DashboardComponent implements OnInit {
     public authService: AuthService,
     public resumeService: ResumeService,
     private fileService: FileService,
-    private router: Router
+    private router: Router,
+    private jobAppService: JobApplicationService
   ) {}
 
   ngOnInit() {
@@ -86,6 +89,11 @@ export class DashboardComponent implements OnInit {
       // Pre-fill the job description and show the job matcher
       this.jobDescription.set(state.jobDescription);
       this.showJobMatcher.set(true);
+
+      // Store the application ID if provided
+      if (state?.applicationId) {
+        this.currentApplicationId.set(state.applicationId);
+      }
 
       // Scroll to job matcher section after a short delay
       setTimeout(() => {
@@ -424,7 +432,15 @@ export class DashboardComponent implements OnInit {
       this.rewrittenText.set(tailored);
 
       // Analyze the tailored version's match score
-      await this.resumeService.analyzeJobMatch(tailored, this.jobDescription());
+      const matchResult = await this.resumeService.analyzeJobMatch(tailored, this.jobDescription());
+
+      // If we have an application ID, save the tailored resume
+      if (this.currentApplicationId()) {
+        await this.jobAppService.updateApplication(this.currentApplicationId()!, {
+          tailored_resume_text: tailored,
+          match_score: matchResult.score
+        });
+      }
 
       this.currentView.set('result');
     } catch (error: any) {

@@ -16,6 +16,8 @@ export class Applications implements OnInit {
   selectedStatus = signal<string>('all');
   showNewApplicationModal = signal(false);
   isCreating = signal(false);
+  showResumeModal = signal(false);
+  selectedResume = signal<string | null>(null);
 
   // New application form
   newApplication = {
@@ -129,10 +131,32 @@ export class Applications implements OnInit {
     // Navigate to dashboard with the job description as state
     this.router.navigate(['/dashboard'], {
       state: {
+        applicationId: app.id,
         jobDescription: app.job_description,
         jobTitle: app.job_title,
         companyName: app.company_name
       }
     });
+  }
+
+  viewTailoredResume(app: JobApplication) {
+    this.selectedResume.set(app.tailored_resume_text || null);
+    this.showResumeModal.set(true);
+  }
+
+  closeResumeModal() {
+    this.showResumeModal.set(false);
+    this.selectedResume.set(null);
+  }
+
+  async copyResumeToClipboard() {
+    if (!this.selectedResume()) return;
+
+    try {
+      await navigator.clipboard.writeText(this.selectedResume()!);
+      alert('Resume copied to clipboard!');
+    } catch (error) {
+      alert('Failed to copy to clipboard. Please manually select and copy the text.');
+    }
   }
 }
