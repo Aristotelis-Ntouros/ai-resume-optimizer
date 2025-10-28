@@ -65,10 +65,10 @@
 
 /* Dashboard Content */
 .dashboard-content {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-xl);
-  animation: fadeIn 0.5s ease-out;
+  padding: var(--space-lg);
+  animation: fadeIn 0.4s ease-out;
 }
 
 .error-banner {
@@ -101,10 +101,10 @@
 
 .upload-card {
   background: white;
-  padding: var(--space-xl);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
 }
 
 .upload-card h1 {
@@ -126,16 +126,10 @@
 .upload-area {
   border: 2px dashed var(--gray-300);
   border-radius: var(--radius-lg);
-  padding: var(--space-xl);
+  padding: var(--space-lg);
   text-align: center;
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-fast);
   background: var(--gray-50);
-}
-
-.upload-area:hover {
-  border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.02);
-  transform: scale(1.01);
 }
 
 .upload-area.drag-over {
@@ -160,9 +154,6 @@
   transition: transform var(--transition-base);
 }
 
-.upload-label:hover svg {
-  transform: translateY(-4px);
-}
 
 .upload-text {
   font-size: 1rem;
@@ -287,63 +278,56 @@
 }
 
 .btn-primary {
-  padding: 0.75rem 1.75rem;
+  padding: 0.625rem 1.25rem;
   background: var(--gradient-hero);
   color: white;
   border: none;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
   position: relative;
-  overflow: hidden;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s;
-}
-
-.btn-primary:hover::before {
-  left: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 38px;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  animation: pulse 2s ease-in-out infinite;
 }
 
 .btn-secondary {
-  padding: 0.75rem 1.75rem;
+  padding: 0.625rem 1.25rem;
   background: white;
   color: var(--primary);
-  border: 2px solid var(--primary);
+  border: 1.5px solid var(--primary);
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 38px;
 }
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--primary);
   color: white;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:disabled {
