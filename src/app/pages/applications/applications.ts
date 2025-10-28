@@ -17,6 +17,9 @@ export class Applications implements OnInit {
   selectedStatus = signal<string>('all');
   showNewApplicationModal = signal(false);
   isCreating = signal(false);
+  showResumePreviewModal = signal(false);
+  selectedResumeHtml = signal<string>('');
+  currentApplication = signal<JobApplication | null>(null);
 
   // New application form
   newApplication = {
@@ -139,8 +142,58 @@ export class Applications implements OnInit {
     });
   }
 
+  convertResumeTextToHtml(text: string): string {
+    // Convert plain text resume to formatted HTML
+    const lines = text.split('\n');
+    let html = '<div class="resume-document">';
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      if (!line) {
+        html += '<div class="spacing"></div>';
+        continue;
+      }
+
+      // Detect headers (all caps or lines with certain keywords)
+      if (line === line.toUpperCase() && line.length > 2 && line.length < 50) {
+        html += `<h2 class="section-header">${line}</h2>`;
+      }
+      // Detect contact info or single lines with special characters
+      else if (line.includes('@') || line.includes('|') || line.includes('•')) {
+        html += `<p class="contact-line">${line}</p>`;
+      }
+      // Detect bullet points
+      else if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+        html += `<p class="bullet-point">${line}</p>`;
+      }
+      // Regular paragraph
+      else {
+        html += `<p class="resume-line">${line}</p>`;
+      }
+    }
+
+    html += '</div>';
+    return html;
+  }
+
   viewTailoredResume(app: JobApplication) {
     if (!app.tailored_resume_text) return;
+
+    this.currentApplication.set(app);
+    this.selectedResumeHtml.set(this.convertResumeTextToHtml(app.tailored_resume_text));
+    this.showResumePreviewModal.set(true);
+  }
+
+  closeResumePreview() {
+    this.showResumePreviewModal.set(false);
+    this.selectedResumeHtml.set('');
+    this.currentApplication.set(null);
+  }
+
+  downloadResumeAsPdf() {
+    const app = this.currentApplication();
+    if (!app || !app.tailored_resume_text) return;
 
     // Generate filename from company and job title
     const filename = `${app.company_name}_${app.job_title}_Resume.pdf`
