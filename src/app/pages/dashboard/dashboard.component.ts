@@ -433,12 +433,19 @@ export class DashboardComponent implements OnInit {
     this.errorMessage.set('');
 
     try {
+      // Store original ATS score
+      this.originalAtsScore.set(this.resumeService.atsScore()?.score || null);
+
       const tailored = await this.resumeService.tailorResumeForJob(
         this.originalText(),
         this.jobDescription()
       );
 
       this.rewrittenText.set(tailored);
+
+      // Analyze the tailored version's ATS score
+      const newAtsScore = await this.resumeService.analyzeATS(tailored);
+      this.rewrittenAtsScore.set(newAtsScore.score);
 
       // Analyze the tailored version's match score
       const matchResult = await this.resumeService.analyzeJobMatch(tailored, this.jobDescription());
