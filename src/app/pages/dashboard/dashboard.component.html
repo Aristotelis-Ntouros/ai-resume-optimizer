@@ -178,9 +178,10 @@
                   class="btn-primary btn-full-width"
                   [disabled]="resumeService.isLoading()">
                   @if (resumeService.isLoading()) {
-                    <span>🚀 Rewriting CV with AI...</span>
+                    <span class="loading-spinner"></span>
+                    <span>Optimizing...</span>
                   } @else {
-                    <span>🚀 Optimize My Resume with AI</span>
+                    <span>Optimize My Resume</span>
                   }
                 </button>
               </div>
@@ -355,7 +356,14 @@ We are looking for a Senior Software Engineer with:
         <div class="result-header">
           <h1>Your Optimized Resume</h1>
           <div class="result-actions">
-            <button (click)="downloadPDF()" class="btn-primary">Download PDF</button>
+            <button (click)="downloadPDF()" class="btn-primary" [disabled]="isGeneratingTemplate()">
+              @if (isGeneratingTemplate()) {
+                <span class="loading-spinner"></span>
+                <span>Generating...</span>
+              } @else {
+                <span>Download PDF</span>
+              }
+            </button>
             <button (click)="startNew()" class="btn-outline">Start New</button>
           </div>
         </div>
