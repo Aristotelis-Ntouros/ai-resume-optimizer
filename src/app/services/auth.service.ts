@@ -38,9 +38,12 @@ export class AuthService {
           this.currentUser.set(session.user);
           this.isAuthenticated.set(true);
 
-          // Navigate to dashboard after successful OAuth login
-          if (window.location.pathname !== '/dashboard') {
-            console.log('Navigating to dashboard');
+          // Navigate to dashboard only if we're on login/signup pages
+          const currentPath = window.location.pathname;
+          const shouldRedirect = ['/', '/login', '/signup'].includes(currentPath);
+
+          if (shouldRedirect) {
+            console.log('Navigating to dashboard from auth page');
             await this.router.navigate(['/dashboard']);
           }
         }
