@@ -188,7 +188,15 @@ export class Applications implements OnInit {
     if (!app.tailored_resume_text) return;
 
     this.currentApplication.set(app);
-    this.showTemplateSelector.set(true);
+
+    // If we already have generated HTML, show it directly
+    if (app.template_html) {
+      this.previewHtml.set(app.template_html);
+      this.showResumePreview.set(true);
+    } else {
+      // Otherwise, show template selector
+      this.showTemplateSelector.set(true);
+    }
   }
 
   closeTemplateSelector() {
@@ -223,6 +231,12 @@ export class Applications implements OnInit {
         this.previewHtml.set(data.html);
         this.showTemplateSelector.set(false);
         this.showResumePreview.set(true);
+
+        // Save template name and HTML to application
+        await this.jobAppService.updateApplication(app.id, {
+          template_name: templateId,
+          template_html: data.html
+        });
       }
     } catch (error) {
       console.error('Error generating template:', error);

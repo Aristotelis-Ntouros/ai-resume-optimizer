@@ -303,6 +303,15 @@ export class DashboardComponent implements OnInit {
           console.log('Print dialog triggered');
         }, 500);
 
+        // Save template name and HTML to application if we have an application ID
+        if (this.currentApplicationId()) {
+          await this.jobAppService.updateApplication(this.currentApplicationId()!, {
+            template_name: templateId,
+            template_html: data.html
+          });
+          console.log('Template saved to application');
+        }
+
         this.showTemplateSelector.set(false);
         this.isGeneratingTemplate.set(false);
       } else {

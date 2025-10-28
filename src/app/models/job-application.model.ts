@@ -10,6 +10,8 @@ export interface JobApplication {
   original_resume_url?: string;
   tailored_resume_url?: string;
   tailored_resume_text?: string;
+  template_name?: string;
+  template_html?: string;
   match_score?: number;
   optimization_suggestions?: string;
   created_at: string;
@@ -28,6 +30,8 @@ export interface CreateJobApplicationDto {
   original_resume_url?: string;
   tailored_resume_url?: string;
   tailored_resume_text?: string;
+  template_name?: string;
+  template_html?: string;
   match_score?: number;
   optimization_suggestions?: string;
   notes?: string;
@@ -43,6 +47,8 @@ export interface UpdateJobApplicationDto {
   original_resume_url?: string;
   tailored_resume_url?: string;
   tailored_resume_text?: string;
+  template_name?: string;
+  template_html?: string;
   match_score?: number;
   optimization_suggestions?: string;
   applied_at?: string;
